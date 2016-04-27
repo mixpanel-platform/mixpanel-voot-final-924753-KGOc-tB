@@ -247,7 +247,7 @@
             $('.date-pm').text(ampm);
 
             var contentParams = {limit: 25, type:'unique', unit:'day', from: moment().subtract(1,'hour'), to: moment()}
-            var contentQuery = MP.api.segment('Video Played', 'Content Name', contentParams)
+            var contentQuery = MP.api.segment('Video Played', '$city', contentParams)
 
             contentQuery.done(function(results){
                 console.log(results.values());
