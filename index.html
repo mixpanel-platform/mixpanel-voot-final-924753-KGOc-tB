@@ -193,8 +193,8 @@
 
               while (count <= sortedKeys.length) {
                   if (data[sortedKeys[count]] > 0) {
-                      console.log(sortedKeys[count])
-                      console.log(sortedKeys[count + 1])
+                      //console.log(sortedKeys[count])
+                      //console.log(sortedKeys[count + 1])
                       current = data[sortedKeys[count]]
                       try {
                           lastMinute = data[sortedKeys[count + 1]]
@@ -214,7 +214,7 @@
             /* Query for Monthly Active Users */
             var monthlyQuery = MP.api.query('/api/2.0/events/', {event:events, unit: 'month', union: 1, type:'unique'}, {dataType: 'json'}) 
             monthlyQuery.done(function(json){
-                console.log(json)
+                //console.log(json)
                 var data = _.values(json.data.values)
                 var monthlyActives = _.values(data[0])[0]
 
@@ -227,7 +227,7 @@
                 var data = _.values(json.data.values)[0];
                 var dataKeys = _.keys(data).sort().reverse()
                 var dailyActives = data[dataKeys[0]];
-                console.log(dailyActives);
+                //console.log(dailyActives);
                 $('.daily-actives').text(addCommas(dailyActives));
             })
             /* Date Refresh */
