@@ -250,6 +250,7 @@
             var contentQuery = MP.api.segment('Video Played', '$city', contentParams)
 
             contentQuery.done(function(results){
+              debugger;
                 console.log(results.values());
                 _.each(_.keys(results.values()), function(key){
                     /* sum over data in value of results.values()[key] */
