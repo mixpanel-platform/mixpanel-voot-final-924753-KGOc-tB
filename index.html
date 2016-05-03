@@ -246,38 +246,40 @@
             $('.date-time').text(time);
             $('.date-pm').text(ampm);
 
-            var contentParams = {limit: 25, type:'unique', unit:'day', from: moment().subtract(1,'day'), to: moment()}
+            var contentParams = {limit: 25, type:'unique', unit:'minute', from: moment(), to: moment()}
             var contentQuery = MP.api.segment('Video Played', '$city', contentParams)
 
             contentQuery.done(function(results){
-              debugger;
-                console.log(results.values());
-                _.each(_.keys(results.values()), function(key){
-                    /* sum over data in value of results.values()[key] */
-                    var keyData = results.values()[key];
-                    var sortedKeys = _.keys(keyData)
+                var last_five_mins = [];
+                var d = new Date();
+                var year = d.getFullYear();
+                var month = d.getMonth();
+                var date = d.getDate();
+                var hours = d.getHours();
+                var minutes = d.getMinutes();
+                var dateConvert = function(d) {
+                  return d.getFullYear() + '-' +
+                        ((d.getMonth() + 1) < 10? '0' + (d.getMonth() + 1) + '-' : (d.getMonth() + 1) + '-') +
+                        (d.getDate() < 10? '0' + d.getDate() + ' ' : d.getDate() + ' ') +
+                        (d.getHours() < 10? '0' + d.getHours() + ':' : d.getHours() + ':') +
+                        (d.getMinutes() < 10? '0' + d.getMinutes() + ':00' : d.getMinutes() + ':00');
+                };
+                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes, 0)));
+                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 1, 0)));
+                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 2, 0)));
+                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 3, 0)));
+                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 4, 0)));
 
-                    /* sort and reverse */
-                    sortedKeys.sort()
-                    sortedKeys.reverse()
-                    console.log(sortedKeys)
-
-                    var current = 0
-                    var lastMinute = 0
-                    var count = 0
-                    
-                    var totalCurrentUsers = current + lastMinute;
-                    console.log(totalCurrentUsers)
+                var data = {};
+                _.each(last_five_mins, function(t) {
+                  _.each(results.values(), function(vals, city) {
+                    data[city] = data[city] || 0;
+                    data[city] += vals[t];
+                  });
                 });
 
-
                 var table = $('#datatable1').DataTable();
-
-                /* Clear it before we Draw Again */
-
                 table.clear();
-
-                /* Draw new Rows */
 
                 _.each(_.keys(data), function(datum){
                     table.row.add([datum,data[datum]]).draw(false);
