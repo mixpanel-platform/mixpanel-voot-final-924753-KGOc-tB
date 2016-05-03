@@ -111,7 +111,7 @@
                   <div class="col-lg-12">
                      <div class="panel panel-default">
                         <div class="panel-heading text-center">
-                           Real-Time Unique Video Watches -- How many videos have been watched in the last 5 minutes?
+                           Real-Time Unique Video Watches -- Which videos have been watched in the last 30 minutes?
                         </div>
                         <div class="panel-body">
                          <div id="datatable1_wrapper" class="dataTables_wrapper form-inline no-footer">
@@ -247,10 +247,10 @@
             $('.date-pm').text(ampm);
 
             var contentParams = {limit: 25, type:'unique', unit:'minute', from: moment(), to: moment()}
-            var contentQuery = MP.api.segment('Video Played', '$city', contentParams)
+            var contentQuery = MP.api.segment('Video Watched', 'Content Name', contentParams)
 
             contentQuery.done(function(results){
-                var last_five_mins = [];
+                var last_n_mins = [];
                 var d = new Date();
                 var year = d.getFullYear();
                 var month = d.getMonth();
@@ -264,17 +264,17 @@
                         (d.getHours() < 10? '0' + d.getHours() + ':' : d.getHours() + ':') +
                         (d.getMinutes() < 10? '0' + d.getMinutes() + ':00' : d.getMinutes() + ':00');
                 };
-                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes, 0)));
-                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 1, 0)));
-                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 2, 0)));
-                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 3, 0)));
-                last_five_mins.push(dateConvert(new Date(year, month, date, hours, minutes - 4, 0)));
+
+                var number_of_minutes = 30;
+                _.times(number_of_minutes, function(i) {last_n_mins.push(dateConvert(new Date(year, month, date, hours, minutes - i, 0)));});
 
                 var data = {};
-                _.each(last_five_mins, function(t) {
-                  _.each(results.values(), function(vals, city) {
-                    data[city] = data[city] || 0;
-                    data[city] += vals[t];
+                _.each(last_n_mins, function(t) {
+                  _.each(results.values(), function(vals, prop) {
+                    if (prop != 'undefined' && vals[t] !== 0) {
+                      data[prop] = data[prop] || 0;
+                      data[prop] += vals[t];
+                    }
                   });
                 });
 
